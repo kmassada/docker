@@ -3,10 +3,10 @@
 # It requires "aws-keypair" to connect to the centos nodes
 #
 # Command exaple:
-# ansible-playbook centos-docker.yml --private-key ~/.ssh/trusted/aws-keypair.pem -vvv
+# ansible-playbook centos-setup.yml --private-key ~/.ssh/trusted/aws-keypair.pem -vvv
 #
 - name: Setup Centos 7
-  hosts: tag_Application_Docker:&tag_Product_DDC
+  hosts: tag_Application_Docker:&tag_Product_Docker
   remote_user: centos
   become: true
   become_user: root

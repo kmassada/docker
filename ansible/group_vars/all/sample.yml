@@ -1,13 +1,15 @@
----
-  app_user: usr
-  app_user_domain: "example.com"
-  app_user_home: "/home/{{app_user}}"
-  aws_access_key_id: "xxxxxxxxxxxxxxxxxx"
-  aws_secret_access_key: "xxxxxxxxxxxx"
-  aws_instance_prefix: "docker_instance"
-  aws_s3_bucket: "S3bucket"
-  aws_environment: "Sandbox"
-  dynect_exists: False
-  dynect_username: "user"
-  dynect_password: "xxffxxff"
-  dynect_customer_name: "example.com"
+# ---
+#   app_user: usr
+#   app_user_domain: "example.com"
+#   app_user_home: "/home/{{app_user}}"
+#   app_user_key: "hkey.pub"
+#   aws_access_key_id: "xxxxxxxxxxxxxxxxxx"
+#   aws_secret_access_key: "xxxxxxxxxxxx"
+#   aws_instance_prefix: "docker_instance"
+#   aws_s3_bucket: "S3bucket"
+#   aws_environment: "Sandbox"
+#   dynect_exists: False
+#   dynect_username: "user"
+#   dynect_password: "xxffxxff"
+#   dynect_customer_name: "example.com"
+#   ntpserver: "0.ro.pool.ntp.org"
