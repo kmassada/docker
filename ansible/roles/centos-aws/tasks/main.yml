@@ -1,0 +1,29 @@
+---
+  - name: Create aws folder
+    file:
+      path: "{{app_user_home}}/.aws/"
+      state: directory
+      mode: 0755
+      owner: "{{app_user}}"
+      group: "{{app_user}}"
+
+  - name: Set credentials file
+    template:
+      src:  credentials
+      dest: "{{app_user_home}}/{{ item }}"
+      owner: "{{app_user}}"
+      group: "{{app_user}}"
+      mode: "u=rw,g=r,o=r"
+    with_items:
+      - .aws/credentials
+      - .boto
+
+  - lineinfile:
+      dest: "{{app_user_home}}/.bashrc"
+      create: yes
+      line: "export AWS_ACCESS_KEY={{aws_access_key_id}}"
+
+  - lineinfile:
+      dest: "{{app_user_home}}/.bashrc"
+      create: yes
+      line: "export AWS_SECRET_ACCESS_KEY={{aws_secret_access_key}}"

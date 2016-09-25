@@ -1,0 +1,42 @@
+---
+  - name: get all those swarm_managers
+    s3:
+      profile: default
+      bucket: "{{ s3_bucket }}"
+      prefix: "Sandbox/{{ aws_instance_prefix }}/Docker/managers/swarm_manager"
+      mode: list
+    register: swarm_managers_list
+
+  - name: Create managers folder
+    file:
+      path: "/tmp/managers/"
+      state: directory
+      mode: 0755
+      owner: "{{app_user}}"
+      group: "{{app_user}}"
+
+  - name: retrieve managers from s3
+    s3:
+      profile: default
+      bucket: "{{ s3_bucket }}"
+      object: "/{{ item }}"
+      dest: /tmp/managers/{{ item.split('/') | last }}
+      mode: get
+    with_items:
+      - "{{ swarm_managers_list.s3_keys }}"
+    when: swarm_managers_list.s3_keys | length | int != 0
+
+  - stat: path=/tmp/managers
+    register: swarm_managers_path
+
+  - shell: find /tmp/managers -type f
+    register: swarm_managers_files
+
+  - debug: msg="{{ swarm_managers_files.stdout_lines }}"
+
+  - name: Init managers to swarm
+    shell: docker node accept `cat {{item}}`
+    register: result
+    ignore_errors: True
+    with_items:
+      - "{{ swarm_managers_files.stdout_lines  }}"

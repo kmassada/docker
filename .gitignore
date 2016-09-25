@@ -1,0 +1,3 @@
+instance.cfg
+ansible.cfg
+ansible/group_vars/all/main.yml

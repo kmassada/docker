@@ -1,0 +1,15 @@
+---
+  - name: Init managers to swarm
+    shell: docker swarm init
+    register: result
+    ignore_errors: True
+
+  - copy: content="{{ ansible_hostname }}" dest=/tmp/swarm_master
+
+  - name: Set swarm master name
+    s3:
+      profile: default
+      bucket: "{{ s3_bucket }}"
+      object: "/Sandbox/{{ aws_instance_prefix }}/Docker/swarm_master"
+      src: /tmp/swarm_master
+      mode: put

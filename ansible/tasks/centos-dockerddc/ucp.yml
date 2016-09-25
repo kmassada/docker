@@ -1,0 +1,23 @@
+---
+  - name: init managers to swarm
+    shell: docker swarm init
+    register: result
+    ignore_errors: True
+
+  - name:
+    shell: |
+      docker run --name ucp \
+      --admin-password "{{ ddc_admin_username }}" \
+      --admin-username	"{{ ddc_admin_password }}" \
+      --swarm-port "2376" \
+      --controller-port "443" \
+      --swarm-experimental \
+      --jsonlog \
+      -v /tmp/docker/docker_subscription.lic:/docker_subscription.lic \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      docker/ucp install -i \
+      --host-address "{{ansible_default_ipv4.address}}"
+
+  - copy: content="{{ swarm_master.stdout }}" dest=/tmp/hostname
+
+  - s3: profile=default bucket="{{ s3_bucket }}" object="/Sandbox/{{ aws_instance_prefix }}/Docker/swarm_master" src=/tmp/hostname mode=put

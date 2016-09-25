@@ -1,0 +1,14 @@
+---
+# This playbook is meant to be ran locally
+# It requires "aws-keypair" to connect to the centos nodes
+#
+# Command exaple:
+# ansible-playbook centos-dockerd.yml --private-key ~/.ssh/trusted/aws-keypair.pem -vvv
+#
+- name: Setup Centos 7 for Docker
+  hosts: tag_Application_Docker:&tag_Product_Docker
+  remote_user: centos
+  become: true
+  become_user: root
+  roles:
+     - { role: centos-dockerd }

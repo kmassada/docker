@@ -1,0 +1,14 @@
+---
+  - name: install the 'Development tools' package group
+    yum: name="@Development tools" state=present
+
+  - name: install prereqs
+    yum: name={{item}} state=latest
+    with_items: "{{ tools_packages }}"
+
+  - name: selinux disable
+    selinux: state=disabled
+
+  - name: install pip packages
+    pip: name={{item}}
+    with_items: "{{ pip_tools_packages }}"

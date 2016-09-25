@@ -1,0 +1,16 @@
+---
+  - name: Retreive swarm master name
+    s3:
+      profile: default
+      bucket: "{{ s3_bucket }}"
+      object: "/Sandbox/{{ aws_instance_prefix }}/Docker/swarm_master"
+      dest: /tmp/swarm_master
+      mode: get
+
+  - name: Get swarm master name
+    shell: cat /tmp/swarm_master
+    register: swarm_master
+
+  - name: join workers to swarm
+    shell: docker swarm join "{{ swarm_master.stdout }}":2377
+    ignore_errors: True

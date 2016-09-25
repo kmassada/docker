@@ -1,0 +1,37 @@
+---
+  - name: Here
+    debug: msg="{{ansible_default_ipv4.address}}"
+
+  - name: get ec2 facts
+    action: ec2_facts
+
+  - name: List tags on an instance
+    ec2_tag:
+      region: "{{ ansible_ec2_placement_region }}"
+      resource: "{{ ansible_ec2_instance_id }}"
+      state: list
+      aws_access_key: "{{aws_access_key_id}}"
+      aws_secret_key: "{{aws_secret_access_key}}"
+    register: ec2_tags
+
+  - name: Set hostname with tag
+    hostname: name="{{ ec2_tags.tags.Name }}.{{domain}}"
+
+  - name: Set hostname in sysconfig
+    lineinfile:
+      dest: /etc/sysconfig/network
+      regexp: ^HOSTNAME=
+      line: "HOSTNAME={{ ec2_tags.tags.Name }}.{{domain}}"
+
+  - name: install pip dynect package
+    pip: name={{item}}
+    with_items:
+      - DynectDNS
+
+  - dynect:
+      customer_name: "{{dynect_customer_name}}"
+      username: "{{dynect_username}}"
+      password: "{{dynect_password}}"
+      domain: "{{domain}}"
+      linkname: "{{ansible_default_ipv4.address}}"
+      hostname: "{{ ec2_tags.tags.Name }}.{{domain}}"

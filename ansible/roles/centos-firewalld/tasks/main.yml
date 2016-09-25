@@ -1,0 +1,21 @@
+---
+  - name: install prereqs
+    yum: name=firewalld state=latest
+
+  - name: firewalld | enabling firewalld
+    service: name=firewalld enabled=yes
+
+  - name: firewalld | start firewalld
+    service: name=firewalld state=started
+
+  - name: Set firewalld services rules
+    firewalld: service={{item}} permanent=true state=enabled zone=public
+    with_items: "{{ firewalld_services }}"
+    notify:
+      - restart firewalld
+
+  - name: Set firewalld port rules
+    firewalld: port={{item}} permanent=true state=enabled zone=public
+    with_items: "{{ firewalld_ports }}"
+    notify:
+      - restart firewalld

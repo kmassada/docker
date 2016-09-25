@@ -1,0 +1,12 @@
+---
+  - name: install docker
+    shell:  curl -fsSL https://test.docker.com/ | sh
+
+  - name: add user to docker
+    shell:  sudo usermod -aG docker {{ app_user }}
+
+  - name: docker | enabling docker
+    service: name=docker enabled=yes
+
+  - name: docker | start docker
+    service: name=docker state=started

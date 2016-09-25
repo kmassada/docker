@@ -1,0 +1,38 @@
+---
+  - name: Retreive swarm master name
+    s3:
+      profile: default
+      bucket: "{{ s3_bucket }}"
+      object: "/Sandbox/{{ aws_instance_prefix }}/Docker/swarm_master"
+      dest: /tmp/swarm_master
+      mode: get
+
+  - name: Get swarm master name
+    shell: cat /tmp/swarm_master
+    register: swarm_master
+
+  - name: Join managers to swarm
+    shell: docker swarm join --manager "{{ swarm_master.stdout }}":2377
+    ignore_errors: True
+    register: swarm_manager
+
+  - name: Extract swarm id out of error output
+    copy:
+      content: "{{ swarm_manager.stderr | regex_replace('(.|\n)*\"docker\ node\ accept\ (?P<word>.+?)\"(.|\n)*', '\\g<word>') }}"
+      dest: "/tmp/swarm_manager_{{ ansible_hostname }}"
+    when: swarm_manager.stderr | search('\"docker\ node\ accept\ (?P<word>.+)\"')
+
+  - name: Only upload swarm_manager id if extract was successful
+    stat: path="/tmp/swarm_manager_{{ ansible_hostname }}"
+    register: swarm_manager_file
+
+  - name: Upload swarm_manager hostname and id to s3
+    s3:
+      profile: default
+      bucket: "{{ s3_bucket }}"
+      object: "/Sandbox/{{ aws_instance_prefix }}/Docker/managers/swarm_manager_{{ ansible_hostname }}"
+      src: "/tmp/swarm_manager_{{ ansible_hostname }}"
+      mode: put
+    when:  swarm_manager_file.stat is defined and swarm_manager_file.stat.exists
+    ignore_errors: True
+    
