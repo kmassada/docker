@@ -1,6 +1,6 @@
 ---
   - name: Here
-    debug: msg="{{ansible_default_ipv4.address}}"
+    debug: msg="{{ ansible_default_ipv4.address }}"
 
   - name: get ec2 facts
     action: ec2_facts
@@ -15,23 +15,26 @@
     register: ec2_tags
 
   - name: Set hostname with tag
-    hostname: name="{{ ec2_tags.tags.Name }}.{{domain}}"
+    hostname: name="{{ ec2_tags.tags.Name }}.{{ app_user_domain }}"
 
   - name: Set hostname in sysconfig
     lineinfile:
       dest: /etc/sysconfig/network
       regexp: ^HOSTNAME=
-      line: "HOSTNAME={{ ec2_tags.tags.Name }}.{{domain}}"
+      line: "HOSTNAME={{ ec2_tags.tags.Name }}.{{ app_user_domain }}"
 
   - name: install pip dynect package
     pip: name={{item}}
     with_items:
       - DynectDNS
 
-  - dynect:
+  - name: setting dynect user
+    dynect:
       customer_name: "{{dynect_customer_name}}"
       username: "{{dynect_username}}"
       password: "{{dynect_password}}"
-      domain: "{{domain}}"
-      linkname: "{{ansible_default_ipv4.address}}"
-      hostname: "{{ ec2_tags.tags.Name }}.{{domain}}"
+      domain: "{{ app_user_domain }}"
+      linkname: "{{ ansible_default_ipv4.address }}"
+      hostname: "{{ ec2_tags.tags.Name }}.{{ app_user_domain }}"
+    when: dynect_exists == "True"
+    

@@ -2,7 +2,7 @@
   - name: get all those swarm_managers
     s3:
       profile: default
-      bucket: "{{ s3_bucket }}"
+      bucket: "{{ aws_s3_bucket }}"
       prefix: "Sandbox/{{ aws_instance_prefix }}/Docker/managers/swarm_manager"
       mode: list
     register: swarm_managers_list
@@ -18,7 +18,7 @@
   - name: retrieve managers from s3
     s3:
       profile: default
-      bucket: "{{ s3_bucket }}"
+      bucket: "{{ aws_s3_bucket }}"
       object: "/{{ item }}"
       dest: /tmp/managers/{{ item.split('/') | last }}
       mode: get

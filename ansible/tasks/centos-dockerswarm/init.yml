@@ -9,7 +9,7 @@
   - name: Set swarm master name
     s3:
       profile: default
-      bucket: "{{ s3_bucket }}"
-      object: "/Sandbox/{{ aws_instance_prefix }}/Docker/swarm_master"
+      bucket: "{{ aws_s3_bucket }}"
+      object: "{{ aws_environment }}/{{ aws_instance_prefix }}/Docker/swarm_master"
       src: /tmp/swarm_master
       mode: put
