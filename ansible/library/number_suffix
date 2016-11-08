@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+import json
+import sys
+import re
+from ansible.module_utils.basic import *
+
+try:
+    import requests
+    HAS_REQUESTS = True
+except ImportError:
+    HAS_REQUESTS = False
+
+DOCUMENTATION = '''
+module: number_suffix
+version_added: 0.1
+short_description: Given a list of instances,
+                   returns available consecutive suffix
+description:
+     - Pass a list of items: [instance01,instance03,instance04],
+     identify the avaiable consecutive suffix.
+
+options:
+    instances:
+        description:
+            - List of instances
+        required: True
+'''
+
+EXAMPLES = '''
+# case of using job ids
+- number_sufix:
+  instances: "xxxxxxxxxxx01,xxxxxxxxxxxx02,xxxxxxxxx03"
+'''
+
+
+def main():
+    # set the module
+    am_d = dict(project=dict(required=True))
+    global module
+    module = AnsibleModule(argument_spec=am_d)
+
+    options['instances'] = module.params['instances']
+
+    # validate options
+    if options['instances'] is None:
+        module.fail_json(msg="instances required")
+
+    instances = job_ids = output['instances'].split(',')
+    instances = filterSuffix(instances)
+
+    print json.dumps({
+        'output': output,
+        "changed": True
+    })
+    sys.exit(0)
+
+
+def isNumberMatch(number_string):
+    number = 0
+    try:
+        number = int(number_string)
+        print number
+    except ValueError as err:
+        return False
+    except TypeError as err:
+        return False
+    if number >= 99 or number <= 0:
+        return False
+    return True
+
+
+def filterSuffix(instances):
+    results = []
+    p = re.compile('.*(?P<number>[0-9]+)', re.IGNORECASE)
+    for instance in instances:
+        if re.match is not None:
+            print instance
+            number = p.sub('\g<number>', instance)
+            print number
+            if isNumberMatch(number):
+                if number not in results:
+                    results.append(number)
+    return results
+
+if __name__ == "__main__":
+    main()
