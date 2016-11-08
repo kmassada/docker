@@ -1,0 +1,20 @@
+version: '2'
+services:
+  wilder:
+    image: jwilder/docker-gen
+    container_name: wilder    
+    volumes:
+      - $(pwd)/template:/etc/docker-gen/templates
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    volumes_from:
+      - nginx
+  nginx:
+    image: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - $(pwd)/conf.d:/etc/nginx/conf.d
+    tty: jwilder/docker-gen -notify-sighup nginx -watch /etc/docker-gen/templates/nginx.tmpl /etc/nginx/conf.d/default.conf
+    environment: 
+      DEFAULT_HOST: wearehere.mylocal

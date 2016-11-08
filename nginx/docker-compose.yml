@@ -1,0 +1,29 @@
+version: '2'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./conf:/etc/nginx/conf.d
+    environment: 
+      DEFAULT_HOST: wearehere.mylocal
+
+  # whoami:
+  #   image: jwilder/whoami
+  #   container_name: whoami
+  #   environment:
+  #     - VIRTUAL_HOST=whoami.mylocal
+  wordpress:
+    image: wordpress
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_PASSWORD: example
+      VIRTUAL_HOST: wordpress.mylocal
+  mysql:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: example
