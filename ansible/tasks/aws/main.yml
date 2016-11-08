@@ -1,0 +1,10 @@
+---
+  - ec2_remote_facts:
+      profile: default
+      region: us-east-1
+      filters:
+        instance-state-name: running
+        "tag:Product": Docker
+    register: result
+  
+  - debug: var=result.instances|map(attribute='tags')|map(attribute='Name')|join(', ') verbosity=0

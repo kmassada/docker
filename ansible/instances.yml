@@ -1,0 +1,11 @@
+---
+# This playbook is meant to be ran locally
+# It requires "aws-keypair" to connect to the centos nodes
+#
+# Command exaple:
+# ansible-playbook instances.yml --private-key ~/.ssh/trusted/aws-keypair.pem -vvv
+#
+- name: Spin instances
+  hosts: localhost
+  tasks:
+     - include: tasks/aws/main.yml
